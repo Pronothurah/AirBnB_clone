@@ -1,0 +1,4 @@
+.vscode/
+*.out
+*.exe
+alx_test_suite/
