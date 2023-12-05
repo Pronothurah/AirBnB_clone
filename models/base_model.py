@@ -7,7 +7,6 @@ import models
 from uuid import uuid4
 from datetime import datetime
 
-
 class BaseModel:
     """Represents the BaseModel of HBnB project."""
 
@@ -30,11 +29,14 @@ class BaseModel:
                     self.__dict__[key] = datetime.strptime(val, dtfmt)
                 else:
                     self.__dict__[key] = val
+            else:
+                models.storage.new(self)
 
     def save(self):
         """Update updated_at with the current datetime"""
 
         self.updated_at = datetime.today()
+        models.storage.save()
 
     def to_dict(self):
         """Returns a dictionary of the BaseModel instance.
