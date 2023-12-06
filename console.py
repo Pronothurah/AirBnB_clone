@@ -2,13 +2,21 @@
 
 """Defines the HBnB console."""
 
-import shlex
 import cmd
-from models.base_model import BaseModel
+import sys
+import shlex
+from models.city import City
 from models.user import User
+from models.place import Place
+from models.state import State
+from models.review import Review
+from models.amenity import Amenity
+from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
 
-my_classes = {"BaseModel": BaseModel, "User": User}
+my_classes = {"BaseModel": BaseModel, "User": User, "State": State,
+              "City": City, "Amenity": Amenity,
+              "Place": Place, "Review": Review}
 
 
 class HBNBCommand(cmd.Cmd):
@@ -28,6 +36,10 @@ class HBNBCommand(cmd.Cmd):
         """EOF signal to exit the program."""
         print("")
         return True
+
+    def emptyline(self):
+        """Do nothing on empty line\n"""
+        pass
 
     def do_create(self, args):
         """ Usage: create <class>
@@ -82,7 +94,6 @@ class HBNBCommand(cmd.Cmd):
         """Prints all string representation of all instances
         based or not on the class name."""
 
-        
         list_objects = []
         """list_objects is a list with all the objects"""
         if args not in my_classes:

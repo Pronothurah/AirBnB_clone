@@ -2,7 +2,7 @@
 
 """Defines a class State. """
 
-from models.vase_model import BaseModel
+from models.base_model import BaseModel
 
 
 class State(BaseModel):
