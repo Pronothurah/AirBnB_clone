@@ -4,7 +4,9 @@
 
 import cmd
 import sys
+import json
 import shlex
+import models
 from models.city import City
 from models.user import User
 from models.place import Place
@@ -27,6 +29,13 @@ class HBNBCommand(cmd.Cmd):
     """
 
     prompt = "(hbnb) "
+    classes = ["BaseModel",
+               "User",
+               "State",
+               "City",
+               "Amenity",
+               "Place",
+               "Review"]
 
     def do_quit(self, args):
         """Quit command to exit the program."""
@@ -53,11 +62,17 @@ class HBNBCommand(cmd.Cmd):
         if args[0] not in my_classes:
             print("** class doesn't exist **")
             return
+        if args[0] in my_classes:
+            """if the args[0] is in my_classes, then the class exists"""
+            new_object = eval(args[0])()
+            new_object.save()
+            """save() saves the changes in the JSON file"""
+            print(new_object.id)
+            """print the id of the object"""
 
     def do_show(self, args):
-        """Usage: show <class> <id> or <class>.show(<id>)
-        Display the string representation of a class instance of a given id.
-        """
+        """Prints the string representation of an instance, format:
+        show <class name> <id>."""
 
         args_list = shlex.split(args)
         """args_list is a list of arguments passed to the command
@@ -72,9 +87,17 @@ class HBNBCommand(cmd.Cmd):
         elif len(args_list) == 1:
             print("** instance id missing **")
             return
-        else:
+        new_object = "{}.{}".format(args_list[0], args_list[1])
+        """new_object is a string that is the class name an the id"""
+        if new_object not in models.storage.all().keys():
+            """if the new_object is not in the dictionary,
+            then the object doesn't exist"""
             print("** no instance found **")
             return
+        else:
+            print("[{}] ({}) {}".format(args_list[0], new_object[1],
+                  models.storage.all()[new_object]))
+            """print the object in format [class name] (id) object"""
 
     def do_destroy(self, args):
         """Deletes an instance based on the class name and id."""
@@ -85,15 +108,32 @@ class HBNBCommand(cmd.Cmd):
         if len(args_list) == 0:
             print("** class name missing **")
             return
-        if len(args_list) == 1:
-            print("** instance id missing **")
+        elif args_list[0] in my_classes:
+            """if the args_list[0] is in my_classes, then the class exists"""
+            if len(args_list) > 1:
+                """if the lenght of args_list is greater than 1,
+                then the id is passed"""
+                key = args_list[0] + "." + args_list[1]
+                """key = args_list[0] + "." + args_list[1]
+                    key is the key to search in the dictionary"""
+                if key in models.storage.all():
+                    del models.storage.all()[key]
+                    """del(key) removes the key from the dictionary"""
+                    models.storage.save()
+                    """save() saves the changes in the JSON file"""
+                else:
+                    print("** no instance found **")
+            else:
+                print("** instance id missing **")
         else:
-            print("** instance id missing **")
+            print("** class doesn't exist **")
 
     def do_all(self, args):
         """Prints all string representation of all instances
         based or not on the class name."""
 
+        new_object = models.storage.all()
+        """new_object is a dictionary with all the objects"""
         list_objects = []
         """list_objects is a list with all the objects"""
         if args not in my_classes:
@@ -144,7 +184,18 @@ class HBNBCommand(cmd.Cmd):
         if len(args_list) == 3:
             print("** value missing **")
             return
-
+        attribute = args_list[2]
+        value = args_list[3]
+        if '"' in value:
+            value = value.strip('"')
+        """args_list[0] is the class name, args_list[1] is the id, args_list[2]
+        is the attribute name, args_list[3] is the value to update"""
+        try:
+            setattr(all_objects[key], attribute, value)
+            models.storage.save()
+        except AttributeError:
+            print("** attribute name missing **")
+            return
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()

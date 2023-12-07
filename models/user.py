@@ -19,4 +19,10 @@ class User(BaseModel):
     first_name = ""
     last_name = ""
 
-
+    def __init__(self, *args, **kwargs):
+        """ Initialize class User
+            Args:
+                *args: list of strings
+                **kwargs: dictionary of strings
+                """
+        super().__init__(*args, **kwargs)
