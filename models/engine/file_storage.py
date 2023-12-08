@@ -6,6 +6,10 @@
 import json
 from models.base_model import BaseModel
 from models.user import User
+from models.city import City
+from models.review import Review
+from models.state import State
+from models.amenity import Amenity
 
 
 class FileStorage:
@@ -14,6 +18,15 @@ class FileStorage:
         __file_path: the path of the json file
         __objects: a dictionnary of all objects"
     """
+    CLASS_MAP = {
+        'BaseModel': BaseModel,
+        'User': User,
+        'Amenity': Amenity,
+        'City': City,
+        'State': State,
+        'Review': Review
+    }
+
     def __init__(self):
         """ initializes FileStorage
         """
@@ -51,17 +64,17 @@ class FileStorage:
             load the file f and read it
             """
         try:
-            with open(self.__file_path, 'r') as f:
-                my_dict = json.load(f)
-            for key, value in my_dict.items():
-                """this for loop utilise a key value pair to run
-                    my_dict.items() and create a dictionary of key and value"""
-                new_object = key.split('.')
-                class_name = new_object[0]
-                """new_object is equal to key.split('.')[0]
-                    this split the key and take the first part of the key"""
-                self.new(eval("{}".format(class_name))(**value))
-                """this if statement is used to create a new object
-                    with the class name of new_object and its value"""
+            with open(self.__file_path, 'r', encoding='utf-8') as f:
+                data = f.read()
+                if data:
+                    my_dict = json.loads(data)
+                    self.__objects.clear()  # Clear the existing objects before reloading
+                    for key, value in my_dict.items():
+                        class_name, obj_id = key.split('.')
+                        if class_name in self.CLASS_MAP:
+                            obj_class = self.CLASS_MAP[class_name]
+                            instance = obj_class(**value)
+                            self.new(instance)
+
         except FileNotFoundError:
             pass
