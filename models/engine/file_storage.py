@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """ Class FileStorage that serializes instances to a JSON file
     and deserializes JSON file to instances
 """
@@ -68,7 +69,7 @@ class FileStorage:
                 data = f.read()
                 if data:
                     my_dict = json.loads(data)
-                    self.__objects.clear()  # Clear the existing objects before reloading
+                    self.__objects.clear()
                     for key, value in my_dict.items():
                         class_name, obj_id = key.split('.')
                         if class_name in self.CLASS_MAP:
