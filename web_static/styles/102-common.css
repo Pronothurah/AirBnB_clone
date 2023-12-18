@@ -3,7 +3,6 @@
  */
 
 /* body style */
-
 body {
     margin: 0;
     padding: 0;
@@ -13,8 +12,13 @@ body {
     font-family: Circular,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
-/* Container class style */
+/* Block horizontal scrolling */
+html, body {
+    width: 100%;
+    overflow-x: hidden;
+  }
 
+/* Container class style */
 .container {
     margin: 30px auto;
     max-width: 1000px;
